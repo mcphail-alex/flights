@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import { DbController } from './dbController';
+import dbClient from '../db/client';
 
 // Get all flights
 export const getFlights = async (req: Request, res: Response) => {
   try {
-    const flights = await DbController.getAllFlights();
+    const flights = await dbClient.findAll();
     res.json(flights);
   } catch (error) {
     console.error('Error fetching flights:', error);
@@ -15,9 +15,10 @@ export const getFlights = async (req: Request, res: Response) => {
 // Get flight by ID
 export const getFlightById = async (req: Request, res: Response) => {
   try {
-    const flight = await DbController.getFlightById(req.params.id);
+    const flight = await dbClient.findById(req.params.id);
     if (!flight) {
-      return res.status(404).json({ message: 'Flight not found' });
+      res.status(404).json({ message: 'Flight not found' });
+      return;
     }
     res.json(flight);
   } catch (error) {
@@ -29,9 +30,10 @@ export const getFlightById = async (req: Request, res: Response) => {
 // Create a new flight
 export const createFlight = async (req: Request, res: Response) => {
   try {
-    const newFlight = await DbController.addFlight(req.body);
+    const newFlight = await dbClient.create(req.body);
     if (!newFlight) {
-      return res.status(500).json({ message: 'Failed to create flight' });
+      res.status(500).json({ message: 'Failed to create flight' });
+      return;
     }
     res.status(201).json(newFlight);
   } catch (error) {
@@ -43,9 +45,10 @@ export const createFlight = async (req: Request, res: Response) => {
 // Update a flight
 export const updateFlight = async (req: Request, res: Response) => {
   try {
-    const updatedFlight = await DbController.updateFlight(req.params.id, req.body);
+    const updatedFlight = await dbClient.update(req.params.id, req.body);
     if (!updatedFlight) {
-      return res.status(404).json({ message: 'Flight not found' });
+      res.status(404).json({ message: 'Flight not found' });
+      return;
     }
     res.json(updatedFlight);
   } catch (error) {
@@ -57,9 +60,10 @@ export const updateFlight = async (req: Request, res: Response) => {
 // Delete a flight
 export const deleteFlight = async (req: Request, res: Response) => {
   try {
-    const deletedFlight = await DbController.deleteFlight(req.params.id);
+    const deletedFlight = await dbClient.delete(req.params.id);
     if (!deletedFlight) {
-      return res.status(404).json({ message: 'Flight not found' });
+      res.status(404).json({ message: 'Flight not found' });
+      return;
     }
     res.json(deletedFlight);
   } catch (error) {

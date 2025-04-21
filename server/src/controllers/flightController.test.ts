@@ -1,19 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { Request, Response } from 'express';
 import { getFlights, getFlightById, createFlight } from './flightController';
-import { DbController } from './dbController';
 import { Flight } from '../models/Flight';
-
-// Mock the DbController
-vi.mock('./dbController', () => ({
-  DbController: {
-    getAllFlights: vi.fn(),
-    getFlightById: vi.fn(),
-    addFlight: vi.fn(),
-    updateFlight: vi.fn(),
-    deleteFlight: vi.fn()
-  }
-}));
+import { db } from '../db/client';
 
 // Sample flight data for tests
 const mockFlights: Flight[] = [
@@ -62,39 +51,43 @@ describe('Flight Controller', () => {
 
   it('should get all flights', async () => {
     // Setup mock
-    vi.mocked(DbController.getAllFlights).mockResolvedValue(mockFlights);
+    vi.mocked(db.flight.findMany).mockResolvedValue(mockFlights);
     
     // Call the controller
     await getFlights(req as Request, res as Response);
     
     // Assertions
-    expect(DbController.getAllFlights).toHaveBeenCalled();
+    expect(db.flight.findMany).toHaveBeenCalled();
     expect(res.json).toHaveBeenCalledWith(mockFlights);
   });
 
   it('should get a flight by ID', async () => {
     // Setup mock
     req.params = { id: '1' };
-    vi.mocked(DbController.getFlightById).mockResolvedValue(mockFlights[0]);
+    vi.mocked(db.flight.findUnique).mockResolvedValue(mockFlights[0]);
     
     // Call the controller
     await getFlightById(req as Request, res as Response);
     
     // Assertions
-    expect(DbController.getFlightById).toHaveBeenCalledWith('1');
+    expect(db.flight.findUnique).toHaveBeenCalledWith({
+      where: { id: '1' }
+    });
     expect(res.json).toHaveBeenCalledWith(mockFlights[0]);
   });
 
   it('should return 404 for non-existent flight', async () => {
     // Setup mock
     req.params = { id: 'nonexistent' };
-    vi.mocked(DbController.getFlightById).mockResolvedValue(null);
+    vi.mocked(db.flight.findUnique).mockResolvedValue(null);
     
     // Call the controller
     await getFlightById(req as Request, res as Response);
     
     // Assertions
-    expect(DbController.getFlightById).toHaveBeenCalledWith('nonexistent');
+    expect(db.flight.findUnique).toHaveBeenCalledWith({
+      where: { id: 'nonexistent' }
+    });
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.json).toHaveBeenCalledWith({ message: 'Flight not found' });
   });
@@ -115,14 +108,16 @@ describe('Flight Controller', () => {
     };
     
     req.body = newFlightData;
-    vi.mocked(DbController.addFlight).mockResolvedValue(createdFlight);
+    vi.mocked(db.flight.create).mockResolvedValue(createdFlight);
     
     // Call the controller
     await createFlight(req as Request, res as Response);
     
     // Assertions
-    expect(DbController.addFlight).toHaveBeenCalledWith(newFlightData);
+    expect(db.flight.create).toHaveBeenCalledWith({
+      data: newFlightData
+    });
     expect(res.status).toHaveBeenCalledWith(201);
     expect(res.json).toHaveBeenCalledWith(createdFlight);
   });
-}); 
+});

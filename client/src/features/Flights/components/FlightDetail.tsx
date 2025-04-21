@@ -23,15 +23,10 @@ const FlightDetail: React.FC = () => {
 
   return (
     <div className="flight-detail">
-      <div className="flight-detail-header">
-        <h2>Flight Details</h2>
-        <button onClick={handleClose}>Close</button>
-      </div>
       {loading ? (
         <div>Loading...</div>
       ) : (
-        <div className="flight-detail-content">
-          <h3>{selectedFlight.origin} → {selectedFlight.destination}</h3>
+        <div className="flight-detail-content" onClick={handleClose}>
           <div className="detail-row">
             <span>Flight ID:</span>
             <span>{selectedFlight.id}</span>
