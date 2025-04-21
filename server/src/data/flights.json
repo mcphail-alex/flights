@@ -1,0 +1,26 @@
+[
+  {
+    "id": "1",
+    "origin": "New York",
+    "destination": "Los Angeles",
+    "departureTime": "2023-05-15T08:00:00Z",
+    "arrivalTime": "2023-05-15T11:00:00Z",
+    "price": 299.99
+  },
+  {
+    "id": "2",
+    "origin": "Chicago",
+    "destination": "Miami",
+    "departureTime": "2023-05-16T09:30:00Z",
+    "arrivalTime": "2023-05-16T13:00:00Z",
+    "price": 249.99
+  },
+  {
+    "id": "3",
+    "origin": "San Francisco",
+    "destination": "Seattle",
+    "departureTime": "2023-05-17T14:00:00Z",
+    "arrivalTime": "2023-05-17T16:00:00Z",
+    "price": 189.99
+  }
+] 
